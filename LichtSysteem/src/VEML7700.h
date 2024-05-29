@@ -17,30 +17,33 @@ public:
 
   void SetInterrupt(EnumInterrupt NewInterrupt);
 
+  void SetHighT(u16 NewHighT);
+
+  void SetLowT(u16 NewLowT);
+
   void SetOn(EnumOn NewOn);
 
-  void SetPSM(EnumPowerSave NewPSM);
+  void SetPSM(EnumPSM NewPSM);
 
   int GetALSLux();
 
   int GetWhiteLux();
 
+  int GetThresholdState();
+
   void Begin();
 
-  VEML7700() : Gain(ALS_GAIN_0_125X), IT(ALS_IT_100MS), Persistence(ALS_PERS_1), Interrupt(ALS_INT_ON), On(ALS_ON) {}
+  VEML7700() : Gain(ALS_GAIN_0_125X), IT(ALS_IT_100MS), Persistence(ALS_PERS_1), Interrupt(ALS_INT_ON), On(ALS_ON), PSM(ALS_PSM_OFF) {}
 
-  VEML7700(const EnumGain& Gain) : Gain(Gain), IT(ALS_IT_100MS), Persistence(ALS_PERS_1), Interrupt(ALS_INT_ON), On(ALS_ON) {}
+  VEML7700(const EnumGain& Gain) : Gain(Gain), IT(ALS_IT_100MS), Persistence(ALS_PERS_1), Interrupt(ALS_INT_ON), On(ALS_ON), PSM(ALS_PSM_OFF) {}
 
-  VEML7700(const u16& Gain, const u16& IT, const u16& Persistence, const u16& Interrupt, const u16& On) : Gain(Gain), IT(IT), Persistence(Persistence), Interrupt(Interrupt), On(On) {} 
+  VEML7700(const EnumGain& Gain, const EnumIT& IT, const EnumPersistence& Persistence, const EnumInterrupt& Interrupt, const EnumOn& On, const EnumPSM& PSM) : Gain(Gain), IT(IT), Persistence(Persistence), Interrupt(Interrupt), On(On), PSM(PSM) {} 
   
   void Send(EnumCommandMode CommandMode, u16 Command);
 
   u16 Receive(EnumCommandMode CommandMode);
 private:
-  u16 Gain, IT, Persistence, Interrupt, On;
-
-  // Translates the settings for config_0
-  u16 TranslatorConfig0();
+  u16 Gain, IT, Persistence, Interrupt, On, PSM, HighT, LowT;
 
   int ValueLuxCalculator(u16 val);
 

@@ -57,7 +57,7 @@ enum EnumOn{
   ALS_OFF = 0x0001
 };
 
-enum EnumPowerSave{
+enum EnumPSM{
   ALS_PSM_OFF = 0x0000,
   ALS_PSM_1 = 0x0001,
   ALS_PSM_2 = 0x0003,

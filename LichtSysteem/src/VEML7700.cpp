@@ -29,7 +29,18 @@ void VEML7700::SetOn(EnumOn NewOn){
   UpdateConfig0();
 }
 
-void VEML7700::SetPSM(EnumPowerSave NewPSM){
+void VEML7700::SetHighT(u16 NewHighT){
+  HighT = NewHighT;
+  Send(COMMAND_MODE_1, NewHighT);
+}
+
+void VEML7700::SetLowT(u16 NewLowT){
+  LowT = NewLowT;
+  Send(COMMAND_MODE_2, NewLowT);
+}
+
+void VEML7700::SetPSM(EnumPSM NewPSM){
+  PSM = NewPSM;
   Send(COMMAND_MODE_3, NewPSM);
 }
 
@@ -43,10 +54,18 @@ int VEML7700::GetWhiteLux(){
   return ValueLuxCalculator(val); 
 }
 
+int VEML7700::GetThresholdState(){
+  u16 val = Receive(COMMAND_MODE_6);
+  if((val & 0x4000) == 0x4000) return 2;
+  if((val & 0x8000) == 0x8000) return 1;
+  return 0;
+}
+
 void VEML7700::Begin(){
   Wire.setClock(400000);
   Wire.begin(VEML7700_ADRESS);
   UpdateConfig0();
+  Send(COMMAND_MODE_3, PSM);
 }
 
 void VEML7700::Send(EnumCommandMode CommandMode, u16 Command){
@@ -73,10 +92,6 @@ u16 VEML7700::Receive(EnumCommandMode CommandMode){
 }
 
 // Private
-u16 VEML7700::TranslatorConfig0(){
-  u16 output = Gain | IT | Persistence | Interrupt | On;
-  return output;
-}
 
 int VEML7700::ValueLuxCalculator(u16 val){
   float factorGain = 1;
@@ -99,37 +114,6 @@ int VEML7700::ValueLuxCalculator(u16 val){
 }
 
 void VEML7700::UpdateConfig0(){
-  u16 command = TranslatorConfig0();
-  
-  Wire.beginTransmission(VEML7700_ADRESS);
-  Wire.write(COMMAND_MODE_0);
-  Wire.write(u8(command));
-  Wire.write(u8(command >> 8));
-  Wire.endTransmission();
+  u16 command = Gain | IT | Persistence | Interrupt | On;
+  Send(COMMAND_MODE_0, command);
 }
-
-
-
-// old
-// int debug_interrupt_status(){
-//   // send registry for interrupt
-//   Wire.beginTransmission(VEML7700_ADRESS);
-//   Wire.write(COMMAND_MODE_6);
-//   Wire.endTransmission(false);
-
-//   // request bytes + return interrupt status
-//   Wire.requestFrom(VEML7700_ADRESS, 2);
-//   u8 b1 = Wire.read();
-//   u8 b2 = Wire.read();
-//   u16 val = (b2 << 8) | b1;
-//   Serial.print("Interrupt status: ");
-//   if(val >> 14 == 1){ 
-//     Serial.println("High treshold exceeded");
-//     return 1;
-//   }else if(val >> 15 == 1){
-//     Serial.println("Low treshold exceeded");
-//     return 2;
-//   }  
-//   Serial.println("Everything is fine.");
-//   return 0;
-// }
