@@ -1,18 +1,19 @@
 #include <Arduino.h>
-#include <Wire.h>
 #include "VEML7700.h"
+
+VEML7700 Ronnie;
 
 void setup() {
   // put your setup code here, to run once:
-  Wire.setClock(400000);
-  Wire.begin(VEML7700_ADRESS);
+  Ronnie.Begin();
   Serial.begin(9600);
-  standard_setup();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   delay(1000);
-  Serial.print("Lux: ");
-  Serial.println(get_lux());
+  Serial.print("ALS Lux: ");
+  Serial.println(Ronnie.GetALSLux());
+  Serial.print("White Lux: ");
+  Serial.println(Ronnie.GetWhiteLux());
 }

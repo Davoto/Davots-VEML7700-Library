@@ -2,25 +2,65 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-u16 options_command_mode_0(u16 Gain, u16 IT, u16 Persistence, u16 Interrupt, u16 On) {
-    u16 output = Gain | IT | Persistence | Interrupt | On;
-    return output;
+// Public
+// Standard Functions
+void VEML7700::SetGain(EnumGain NewGain){
+  Gain = NewGain;
+  UpdateConfig0();
 }
 
-int debug_send(u8 command_mode, u16 command){  
+void VEML7700::SetIT(EnumIT NewIT){
+  IT = NewIT;
+  UpdateConfig0();
+}
+
+void VEML7700::SetPersistence(EnumPersistence NewPersistence){
+  Persistence = NewPersistence;
+  UpdateConfig0();
+}
+
+void VEML7700::SetInterrupt(EnumInterrupt NewInterrupt){
+  Interrupt = NewInterrupt;
+  UpdateConfig0();
+}
+
+void VEML7700::SetOn(EnumOn NewOn){
+  On = NewOn;
+  UpdateConfig0();
+}
+
+void VEML7700::SetPSM(EnumPowerSave NewPSM){
+  Send(COMMAND_MODE_3, NewPSM);
+}
+
+int VEML7700::GetALSLux(){
+  u16 val = Receive(COMMAND_MODE_4);
+  return ValueLuxCalculator(val);
+}
+
+int VEML7700::GetWhiteLux(){
+  u16 val = Receive(COMMAND_MODE_5);
+  return ValueLuxCalculator(val); 
+}
+
+void VEML7700::Begin(){
+  Wire.setClock(400000);
+  Wire.begin(VEML7700_ADRESS);
+  UpdateConfig0();
+}
+
+void VEML7700::Send(EnumCommandMode CommandMode, u16 Command){
   Wire.beginTransmission(VEML7700_ADRESS);
-  if(Wire.write(command_mode) != 1) return 1;
-  if(Wire.write(u8(command)) != 1) return 2;
-  if(Wire.write(u8(command >> 8)) != 1) return 3;
-  if(Wire.endTransmission()) return 4;
-  return 0;
-  
+  Wire.write(CommandMode);
+  Wire.write(u8(Command));
+  Wire.write(u8(Command >> 8));
+  Wire.endTransmission();
 }
 
-int debug_receive(u8 command_mode, String text){
+u16 VEML7700::Receive(EnumCommandMode CommandMode){
   // send registry
   Wire.beginTransmission(VEML7700_ADRESS);
-  Wire.write(command_mode);
+  Wire.write(CommandMode);
   Wire.endTransmission(false);
 
   // request bytes
@@ -28,35 +68,17 @@ int debug_receive(u8 command_mode, String text){
   u8 b1 = Wire.read();
   u8 b2 = Wire.read();
   u16 val = (b2 << 8) | b1;
-  Serial.print(text);
-  Serial.println(val);
-  return 0;
+
+  return val;
 }
 
-int debug_interrupt_status(){
-  // send registry for interrupt
-  Wire.beginTransmission(VEML7700_ADRESS);
-  Wire.write(COMMAND_MODE_6);
-  Wire.endTransmission(false);
-
-  // request bytes + return interrupt status
-  Wire.requestFrom(VEML7700_ADRESS, 2);
-  u8 b1 = Wire.read();
-  u8 b2 = Wire.read();
-  u16 val = (b2 << 8) | b1;
-  Serial.print("Interrupt status: ");
-  if(val >> 14 == 1){ 
-    Serial.println("High treshold exceeded");
-    return 1;
-  }else if(val >> 15 == 1){
-    Serial.println("Low treshold exceeded");
-    return 2;
-  }  
-  Serial.println("Everything is fine.");
-  return 0;
+// Private
+u16 VEML7700::TranslatorConfig0(){
+  u16 output = Gain | IT | Persistence | Interrupt | On;
+  return output;
 }
 
-int value_lux_translator(u16 Gain, u16 IT, u16 result_raw){
+int VEML7700::ValueLuxCalculator(u16 val){
   float factorGain = 1;
   float factorIT = 0.0576;
 
@@ -72,32 +94,42 @@ int value_lux_translator(u16 Gain, u16 IT, u16 result_raw){
   if(IT == ALS_IT_400MS){factorIT = 0.0144;}else
   if(IT == ALS_IT_800MS){factorIT = 0.0072;}
 
-  int val = result_raw * factorGain * factorIT;
-  // int lux = val * (1.0023f + val * (8.1488e-5f + val * (-9.3924e-9f + val * 6.0135e-13f)));
-
-  return val;
+  int out = val * factorGain * factorIT;
+  return out;
 }
 
-void standard_setup(u16 Gain, u16 IT, u16 Persistence, u16 Interrupt, u16 On){
-  u16 command = options_command_mode_0(Gain, IT, Persistence, Interrupt, On);
+void VEML7700::UpdateConfig0(){
+  u16 command = TranslatorConfig0();
+  
   Wire.beginTransmission(VEML7700_ADRESS);
-  Wire.write(u8(COMMAND_MODE_0));
+  Wire.write(COMMAND_MODE_0);
   Wire.write(u8(command));
   Wire.write(u8(command >> 8));
   Wire.endTransmission();
 }
 
-int get_lux(u16 Gain, u16 IT){
-  // send registry
-  Wire.beginTransmission(VEML7700_ADRESS);
-  Wire.write(COMMAND_MODE_4);
-  Wire.endTransmission(false);
 
-  // request bytes
-  Wire.requestFrom(VEML7700_ADRESS, 2);
-  u8 b1 = Wire.read();
-  u8 b2 = Wire.read();
-  u16 val = (b2 << 8) | b1;
-  
-  return value_lux_translator(Gain, IT, val);
-}
+
+// old
+// int debug_interrupt_status(){
+//   // send registry for interrupt
+//   Wire.beginTransmission(VEML7700_ADRESS);
+//   Wire.write(COMMAND_MODE_6);
+//   Wire.endTransmission(false);
+
+//   // request bytes + return interrupt status
+//   Wire.requestFrom(VEML7700_ADRESS, 2);
+//   u8 b1 = Wire.read();
+//   u8 b2 = Wire.read();
+//   u16 val = (b2 << 8) | b1;
+//   Serial.print("Interrupt status: ");
+//   if(val >> 14 == 1){ 
+//     Serial.println("High treshold exceeded");
+//     return 1;
+//   }else if(val >> 15 == 1){
+//     Serial.println("Low treshold exceeded");
+//     return 2;
+//   }  
+//   Serial.println("Everything is fine.");
+//   return 0;
+// }
