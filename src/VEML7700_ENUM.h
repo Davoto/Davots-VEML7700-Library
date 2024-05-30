@@ -1,5 +1,5 @@
-#ifndef VEML7700_CONFIG_H
-#define VEML7700_CONFIG_H
+#ifndef VEML7700_ENUM_H
+#define VEML7700_ENUM_H
 
 // Standard adress of VEML7700
 enum EnumAdress{
@@ -65,4 +65,4 @@ enum EnumPSM{
   ALS_PSM_4 = 0x0007
 };
 
-#endif /* VEML7700_CONFIG_H */
+#endif /* VEML7700_ENUM_H */
