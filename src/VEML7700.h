@@ -2,7 +2,7 @@
 #define VEML7700_H
 
 #include <Arduino.h>
-#include "VEML7700_CONFIG.h"
+#include "VEML7700_ENUM.h"
 
 // Class VEML7700
 
