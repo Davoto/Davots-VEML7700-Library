@@ -29,7 +29,19 @@ public:
 
   int GetWhiteLux();
 
-  int GetThresholdState();
+  int GetAutoALSLux();
+
+  int GetAutoWhiteLux();
+
+  bool GetHighThresExc();
+
+  bool GetLowThresExc();
+
+  u8 GetSlaveAddress();
+
+  u8 GetDeviceID();
+
+  void AutoSetGainAndIT(EnumWhiteALS CommandMode);
 
   void Begin();
 
@@ -38,16 +50,19 @@ public:
   VEML7700(const EnumGain& Gain) : Gain(Gain), IT(ALS_IT_100MS), Persistence(ALS_PERS_1), Interrupt(ALS_INT_ON), On(ALS_ON), PSM(ALS_PSM_OFF) {}
 
   VEML7700(const EnumGain& Gain, const EnumIT& IT, const EnumPersistence& Persistence, const EnumInterrupt& Interrupt, const EnumOn& On, const EnumPSM& PSM) : Gain(Gain), IT(IT), Persistence(Persistence), Interrupt(Interrupt), On(On), PSM(PSM) {} 
-  
-  void Send(EnumCommandMode CommandMode, u16 Command);
 
-  u16 Receive(EnumCommandMode CommandMode);
 private:
   u16 Gain, IT, Persistence, Interrupt, On, PSM, HighT, LowT;
 
+  void Send(EnumCommandMode CommandMode, u16 Command);
+
+  u16 Receive(EnumCommandMode CommandMode);
+  
   int ValueLuxCalculator(u16 val);
 
   void UpdateConfig0();
+
+  void AutoDelay();
 };
 
 #endif /* VEML7700_H */

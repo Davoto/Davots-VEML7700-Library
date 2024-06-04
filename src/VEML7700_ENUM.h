@@ -56,13 +56,20 @@ enum EnumOn{
   ALS_ON = 0x0000,
   ALS_OFF = 0x0001
 };
-
+ 
+// Power save modes
 enum EnumPSM{
   ALS_PSM_OFF = 0x0000,
   ALS_PSM_1 = 0x0001,
   ALS_PSM_2 = 0x0003,
   ALS_PSM_3 = 0x0005,
   ALS_PSM_4 = 0x0007
+};
+
+// White or ALS for Auto Settings
+enum EnumWhiteALS{
+  MODE_ALS = 0x04,
+  MODE_WHITE = 0x05
 };
 
 #endif /* VEML7700_ENUM_H */
