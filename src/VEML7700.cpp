@@ -84,7 +84,7 @@ u8 VEML7700::GetDeviceID(){
   return Receive(COMMAND_MODE_7);
 }
 
-void VEML7700::AutoSetGainAndIT(EnumWhiteALS CommandMode){
+void VEML7700::AutoSetGainAndIT(EnumWhiteALS WhiteOrALS){
   const EnumGain GainList[] = {ALS_GAIN_0_125X, ALS_GAIN_0_25X, ALS_GAIN_1X, ALS_GAIN_2X};
   const EnumIT ITList[] = {ALS_IT_25MS, ALS_IT_50MS, ALS_IT_100MS, ALS_IT_200MS, ALS_IT_400MS, ALS_IT_800MS};
 
@@ -94,7 +94,7 @@ void VEML7700::AutoSetGainAndIT(EnumWhiteALS CommandMode){
   SetGain(GainList[GainIndex]);
   SetIT(ITList[ITIndex]);
 
-  u16 ALS = Receive(EnumCommandMode(CommandMode));
+  u16 ALS = Receive(EnumCommandMode(WhiteOrALS));
 
   if(ALS <= 100) {
     while ((ALS <= 100) && !((GainIndex == 3) && (ITIndex == 5))) {
@@ -106,14 +106,14 @@ void VEML7700::AutoSetGainAndIT(EnumWhiteALS CommandMode){
         SetIT(ITList[ITIndex]);
       }
       AutoDelay();
-      ALS = Receive(EnumCommandMode(CommandMode));
+      ALS = Receive(EnumCommandMode(WhiteOrALS));
     } 
   }else {
     while ((ALS > 10000) && (ITIndex > 0)){
       ITIndex--;
       SetIT(ITList[ITIndex]);
       AutoDelay();
-      ALS = Receive(EnumCommandMode(CommandMode));
+      ALS = Receive(EnumCommandMode(WhiteOrALS));
     }
   }
 }
