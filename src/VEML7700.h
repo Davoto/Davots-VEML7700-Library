@@ -17,42 +17,42 @@ public:
   /// @brief SetGain Function
   /// @details Like the title says it sets a new Gain setting and updates the appropriate registry.
   /// @param NewGain Requires a new Gain that falls under EnumGain.  
-  void SetGain(EnumGain NewGain);
+  void SetGain(const EnumGain& NewGain);
 
   /// @brief SetIT Function
   /// @details Like the title says it sets a new IT (Integration Time) setting and updates the appropriate registry.
   /// @param NewIT Requires a new IT that falls under EnumIT.  
-  void SetIT(EnumIT NewIT);
+  void SetIT(const EnumIT& NewIT);
 
   /// @brief SetPersistence Function
   /// @details Like the title says it sets a new Persistence setting and updates the appropriate registry.
   /// @param NewPersistence Requires a new Persistence that falls under EnumPersistence.  
-  void SetPersistence(EnumPersistence NewPersistence);
+  void SetPersistence(const EnumPersistence& NewPersistence);
 
   /// @brief SetInterrupt Function
   /// @details Like the title says it sets a new Interrupt setting and updates the appropriate registry.
   /// @param NewInterrupt Requires a new Interrupt that falls under EnumInterrupt.  
-  void SetInterrupt(EnumInterrupt NewInterrupt);
+  void SetInterrupt(const EnumInterrupt& NewInterrupt);
 
   /// @brief SetHighT(hreshold) Function
   /// @details Like the title says it sets a new High Threshold setting and updates the appropriate registry.
   /// @param NewHighT Requires a new High Treshold thats a unsigned 16 bit integer.  
-  void SetHighT(u16 NewHighT);
+  void SetHighT(const u16& NewHighT);
 
   /// @brief SetLowT(hreshold) Function
   /// @details Like the title says it sets a new Low Threshold setting and updates the appropriate registry.
   /// @param NewLowT Requires a new High Threshold thats a unsigned 16 bit integer.
-  void SetLowT(u16 NewLowT);
+  void SetLowT(const u16& NewLowT);
 
   /// @brief On/off Function
   /// @details Like the title says it sets the sensor on/off setting and updates the appropriate registry.
   /// @param NewOn Requires on/off that falls under EnumOn.  
-  void SetOn(EnumOn NewOn);
+  void SetOn(const EnumOn& NewOn);
 
   /// @brief Powersave Mode Function
   /// @details Like the title says it sets a new Powersave Mode setting and updates the appropriate registry.
   /// @param NewPSM Requires a new Powersave Mode setting that falls under EnumPSM.  
-  void SetPSM(EnumPSM NewPSM);
+  void SetPSM(const EnumPSM& NewPSM);
 
   /// @brief Get ALS(Ambient Light Sensor) Lux value Function.
   /// @details This function gets the ALS value of the appropriate registry and converts it based on a known list of values appropriate to the Gain and IT settings.
@@ -97,7 +97,7 @@ public:
   /// @brief Auto Set Gain And IT Function.
   /// @details Tests different Gain and IT settings for the most accurate reading of the selected registry White Light or ALS(Ambient Light Sensor).
   /// @param WhiteOrALS Option between White Light or ALS based automation.
-  void AutoSetGainAndIT(EnumWhiteALS WhiteOrALS);
+  void AutoSetGainAndIT(const EnumWhiteALS& WhiteOrALS);
 
   /// @brief Starts the connection of the sensor using I²C.
   void Begin();
@@ -121,11 +121,11 @@ public:
 private:
   u16 Gain, IT, Persistence, Interrupt, On, PSM, HighT, LowT;
 
-  void Send(EnumCommandMode CommandMode, u16 Command);
+  void Send(const EnumCommandMode& CommandMode, const u16& Command);
 
-  u16 Receive(EnumCommandMode CommandMode);
+  u16 Receive(const EnumCommandMode& CommandMode);
   
-  int ValueLuxCalculator(u16 val);
+  int ValueLuxCalculator(const u16& val);
 
   void UpdateConfig0();
 

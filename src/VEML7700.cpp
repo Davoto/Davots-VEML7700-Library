@@ -4,42 +4,42 @@
 
 // Public
 // Standard Functions
-void VEML7700::SetGain(EnumGain NewGain){
+void VEML7700::SetGain(const EnumGain& NewGain){
   Gain = NewGain;
   UpdateConfig0();
 }
 
-void VEML7700::SetIT(EnumIT NewIT){
+void VEML7700::SetIT(const EnumIT& NewIT){
   IT = NewIT;
   UpdateConfig0();
 }
 
-void VEML7700::SetPersistence(EnumPersistence NewPersistence){
+void VEML7700::SetPersistence(const EnumPersistence& NewPersistence){
   Persistence = NewPersistence;
   UpdateConfig0();
 }
 
-void VEML7700::SetInterrupt(EnumInterrupt NewInterrupt){
+void VEML7700::SetInterrupt(const EnumInterrupt& NewInterrupt){
   Interrupt = NewInterrupt;
   UpdateConfig0();
 }
 
-void VEML7700::SetOn(EnumOn NewOn){
+void VEML7700::SetOn(const EnumOn& NewOn){
   On = NewOn;
   UpdateConfig0();
 }
 
-void VEML7700::SetHighT(u16 NewHighT){
+void VEML7700::SetHighT(const u16& NewHighT){
   HighT = NewHighT;
   Send(COMMAND_MODE_1, NewHighT);
 }
 
-void VEML7700::SetLowT(u16 NewLowT){
+void VEML7700::SetLowT(const u16& NewLowT){
   LowT = NewLowT;
   Send(COMMAND_MODE_2, NewLowT);
 }
 
-void VEML7700::SetPSM(EnumPSM NewPSM){
+void VEML7700::SetPSM(const EnumPSM& NewPSM){
   PSM = NewPSM;
   Send(COMMAND_MODE_3, NewPSM);
 }
@@ -84,7 +84,7 @@ u8 VEML7700::GetDeviceID(){
   return Receive(COMMAND_MODE_7);
 }
 
-void VEML7700::AutoSetGainAndIT(EnumWhiteALS WhiteOrALS){
+void VEML7700::AutoSetGainAndIT(const EnumWhiteALS& WhiteOrALS){
   const EnumGain GainList[] = {ALS_GAIN_0_125X, ALS_GAIN_0_25X, ALS_GAIN_1X, ALS_GAIN_2X};
   const EnumIT ITList[] = {ALS_IT_25MS, ALS_IT_50MS, ALS_IT_100MS, ALS_IT_200MS, ALS_IT_400MS, ALS_IT_800MS};
 
@@ -127,7 +127,7 @@ void VEML7700::Begin(){
 
 // Private
 
-void VEML7700::Send(EnumCommandMode CommandMode, u16 Command){
+void VEML7700::Send(const EnumCommandMode& CommandMode, const u16& Command){
   Wire.beginTransmission(VEML7700_ADRESS);
   Wire.write(CommandMode);
   Wire.write(u8(Command));
@@ -135,7 +135,7 @@ void VEML7700::Send(EnumCommandMode CommandMode, u16 Command){
   Wire.endTransmission();
 }
 
-u16 VEML7700::Receive(EnumCommandMode CommandMode){
+u16 VEML7700::Receive(const EnumCommandMode& CommandMode){
   // send registry
   Wire.beginTransmission(VEML7700_ADRESS);
   Wire.write(CommandMode);
@@ -150,7 +150,7 @@ u16 VEML7700::Receive(EnumCommandMode CommandMode){
   return val;
 }
 
-int VEML7700::ValueLuxCalculator(u16 val){
+int VEML7700::ValueLuxCalculator(const u16& val){
   float factorGain, factorIT;
 
   switch(Gain) {
